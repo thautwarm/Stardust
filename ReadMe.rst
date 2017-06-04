@@ -34,13 +34,11 @@ But I cannot live without pattern matching yet...
 So...
 
 .. code:: Python
-
-
-  >>patMatch({1,2,3},{1,2,3},part=False)
+  >>patMatch({1,2,3},{1,2,3},partial=False)
   >>True
   >>patMatch({1,2},{1,2,3})
   >>True
-  >>patMatch({1,2},{1,2,3},part=False)
+  >>patMatch({1,2},{1,2,3},partial=False)
   >>False
   >>patMatch([1,2,Any(int)],[1,2,3])
   >>True
