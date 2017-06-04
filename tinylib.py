@@ -59,7 +59,7 @@ def checkSeq(val,var):
         yield False if val[0]!=var[0] else checkSeq(val[1:],var[1:])
 
 
-def partMatch(val,var,partial=True,expected=False):
+def patMatch(val,var,partial=True,expected=False):
     if isinstance(val,Iterable):
         try:
             if issubclass(val.__class__,set):
