@@ -77,10 +77,10 @@ So...
 
   from Stardust import *
   matcher0=PM([1,"2",2])
-  print (matcher.match([1,Any(str),2])) ->True
+  print (matcher.match([1,Any(str),2])) #->True
 
   matcher1=PM([1,2,3,4,""])
-  print (matcher2.match([1,Seq(int),""])) -> True
+  print (matcher2.match([1,Seq(int),""])) #-> True
 
   class sample:
     def __init__(self,a,b,c):
@@ -90,14 +90,11 @@ So...
     def dosome(self):pass
 
   matcher2=PM([[sample(1,2,3),dict(a=2,c=5,d=7)],[],[]])
-  matcher2.match([[sample(Any(),*[Any(int)]*2,dict(a=2)],Seq(list)],partial=True) ->True
+  matcher2.match([[sample(Any(),*[Any(int)]*2,dict(a=2)],Seq(list)],partial=True) #->True
 
 
+And more examples can be found in `runsamples.py <https://github.com/thautwarm/Stardust/blob/master/runsamples.py>`_.
 
-
-
-
-
-this library is not complete at this time, but I'll finish it soon.
+Welcome to find out the bugs in this tiny library.
 
 If you use Python as you main weapon but you want to code in a more rational style, hope you can benefit from my work.
