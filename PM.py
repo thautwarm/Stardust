@@ -30,34 +30,12 @@ def AlgebraDiv(iterator,func):
     for item in iterator:
         subStructures[func(item)].add(item)
     return subStructures
-   
-@DefaultReturn(RetDeal=False)
-def checkSeq(val,var):
-    """
-    check the sequential data-type like tuple and list and the subclasses inherit them.
-    it supports the nd-array in NumPy.
-    """
-    if len(val)==0 :
-        return len(val)==0 and len(var)==0
-    elif isinstance(val[0],Seq):
-        catchNum = 0
-        for var_i in var:
-            if val[0] == var_i:
-                catchNum += 1
-            else:break
-        if catchNum>=val[0].least:
-            return checkSeq(val[1:],var[catchNum:])
-        else:
-            return False
-    elif isinstance(val[0],Iterable) and not issubclass(val[0].__class__,str):
-        return checkSeq(val[0],var[0]) and checkSeq(val[1:],var[1:])
-    else:
-        return False if val[0]!=var[0] else checkSeq(val[1:],var[1:])
-
-
+#@DefaultReturn(RetDeal=False)   
 def patMatch(val,var,partial):
-    if isinstance(val,Iterable):
+    if isinstance(val,Iterable) and not issubclass(val.__class__,str):
         try:
+#============================================================
+            # Set
             if issubclass(val.__class__,set):
                 
                 subStructures=AlgebraDiv(val,
@@ -70,37 +48,84 @@ def patMatch(val,var,partial):
                 if not judge_one:return False
                 
                 for idx,item in enumerate(var):
-                    if item in val:
-                        val.remove(item)
-                    else:
-                        #there is not any instance of "Any", however there is atleast 1 item left in "var".
-                        if not GeneralDefined:return True if partial else False
+                    toRemove=None.__class__
+                    for val_i in val: 
+                        if patMatch(val_i,item,partial=partial):
+                            toRemove=val_i
+                            break
+                    if toRemove!=None.__class__:
+                        val.remove(val_i)
+                        continue
+                    
+                    #there is not any instance of "Any", however there is atleast 1 item left in "var".
+                    if not GeneralDefined:return True if partial else False
 
-                        toRemove=None.__class__
-                        for genItem in GeneralDefined:
-                            if genItem==item:
-                                toRemove=genItem
-                                break
-                        if toRemove!=None.__class__:
-                            GeneralDefined.remove(toRemove)
-                        else:
-                            # An item does not match any instance of "Any" left,
-                            #       which means the "val"  not equaled with "var".
-                            if not partial:
-                                return False
+                    toRemove=None.__class__
+                    for genItem in GeneralDefined:
+                        if genItem==item:
+                            toRemove=genItem
+                            break
+                    if toRemove!=None.__class__:
+                        GeneralDefined.remove(toRemove)
+                    else:
+                        # An item does not match any instance of "Any" left,
+                        #       which means the "val"  not equaled with "var".
+                        if not partial:
+                            return False
                 return not GeneralDefined and (True if partial else (idx+1)==len(var))
+#=============================================================
+            #Dict
             elif issubclass(val.__class__,dict):
                 if not partial and len(val.keys())!=len(var.key()):
                     return False
                 for key in val.keys():
-                    if val[key]!=var[key]:
+                    if not patMatch(val[key],var[key],partial=partial):
                         return False
                 return True
+#=============================================================
+            # Iterator Except str
             else:
-                return checkSeq(val,var)
+                if len(val)==0 :
+#                    print(1,val,var)
+                    return len(val)==0 and len(var)==0
+                elif isinstance(val[0],Seq):
+                    catchNum = 0
+                    for var_i in var:
+                        if patMatch(val[0], var_i,partial=partial):
+                            catchNum += 1
+                        else:break
+                    if catchNum>=val[0].least:
+#                        print(2.1)
+                        return patMatch(val[1:],var[catchNum:],partial=partial)
+                    else:
+#                        print(2.2)
+                        return False
+                elif isinstance(val[0],Iterable) and not issubclass(val[0].__class__,str):
+#                    print(3)
+                    return patMatch(val[0],var[0],partial=partial) and patMatch(val[1:],var[1:],partial=partial)
+                else:
+#                    print(4)
+                    return False if not patMatch(val[0],var[0],partial=partial) \
+                                    else patMatch(val[1:],var[1:],partial=partial)
+                
+
+
+
+
+
+
+
+#=====================================================
         except:
-                return False
+            print(val,var)
+            return BaseException
+            pass
     else:
+        
+        for type_i in (str,int,float,bool,bytes,complex,Any):
+            if issubclass(val.__class__,type_i):
+                return val==var
+                
         attrs=filter(lambda x:not PMRegex.findall(x) ,dir(val))
         if not partial:
             attrsVar=list(filter(lambda x:not PMRegex.findall(x) ,dir(var)))
@@ -112,6 +137,94 @@ def patMatch(val,var,partial):
                                      getattr(var,attr).__class__==getattr(val,attr).__class__) ):
                 return False
         return True
+        
+        
+    
+
+#def patMatch(val,var,partial):
+#    if isinstance(val,Iterable) and not issubclass(val[0].__class__,str):
+#        try:
+#            if issubclass(val.__class__,set):
+#                
+#                subStructures=AlgebraDiv(val,
+#                    lambda item: isinstance(item,Any))
+#                
+#                NormalDefined,GeneralDefined =subStructures[False],subStructures[True]
+#                
+#                judge_one= len(NormalDefined&var)== len(NormalDefined)
+#                
+#                if not judge_one:return False
+#                
+#                for idx,item in enumerate(var):
+#                    if item in val:
+#                        val.remove(item)
+#                    else:
+#                        #there is not any instance of "Any", however there is atleast 1 item left in "var".
+#                        if not GeneralDefined:return True if partial else False
+#
+#                        toRemove=None.__class__
+#                        for genItem in GeneralDefined:
+#                            if genItem==item:
+#                                toRemove=genItem
+#                                break
+#                        if toRemove!=None.__class__:
+#                            GeneralDefined.remove(toRemove)
+#                        else:
+#                            # An item does not match any instance of "Any" left,
+#                            #       which means the "val"  not equaled with "var".
+#                            if not partial:
+#                                return False
+#                return not GeneralDefined and (True if partial else (idx+1)==len(var))
+#            elif issubclass(val.__class__,dict):
+#                if not partial and len(val.keys())!=len(var.key()):
+#                    return False
+#                for key in val.keys():
+#                    if patMatch(val[key],var[key],partial=partial):
+#                        return False
+#                return True
+#            else:
+#                if len(val)==0 :
+#                    print(1)
+#                    return len(val)==0 and len(var)==0
+#                elif isinstance(val[0],Seq):
+#                    catchNum = 0
+#                    for var_i in var:
+#                        if val[0] == var_i:
+#                            catchNum += 1
+#                        else:break
+#                    if catchNum>=val[0].least:
+#                        print(2.1)
+#                        return patMatch(val[1:],var[catchNum:],partial=partial)
+#                    else:
+#                        print(2.2)
+#                        return False
+#                elif isinstance(val[0],Iterable) and not issubclass(val[0].__class__,str):
+#                    print(3)
+#                    return patMatch(val[0],var[0],partial=partial) and patMatch(val[1:],var[1:],partial=partial)
+#                else:
+#                    print(4)
+#                    return False if not patMatch(val[0],var[0],partial=partial) else patMatch(val[1:],var[1:],partial=partial)
+#        except:
+#                return False
+#    else:
+#        print("0.0->",var,type(val),'-------')
+#        
+#        for type_i in (str,int,float,bool,bytes,complex):
+#            if issubclass(val.__class__,type_i):
+#                return val==var
+#                
+#        attrs=filter(lambda x:not PMRegex.findall(x) ,dir(val))
+#        if not partial:
+#            attrsVar=list(filter(lambda x:not PMRegex.findall(x) ,dir(var)))
+#            if set(attrs)&set(attrsVar)!= len(attrs):
+#                return False
+#        
+#        for attr in attrs:
+#            
+#            if  not (hasattr(var,attr) and (getattr(var,attr)==getattr(val,attr) or
+#                                     getattr(var,attr).__class__==getattr(val,attr).__class__) ):
+#                return False
+#        return True
 
 
 class PatternMatching:
@@ -119,4 +232,12 @@ class PatternMatching:
         self.matchvalue=matchvalue
     def match(self,value,partial=True):
         return patMatch(value,self.matchvalue,partial)
-        
+PM=PatternMatching
+
+if True:
+  class sample:
+    def __init__(self,a,b,c):
+      self.a=a
+      self.b=b
+      self.c=c
+    def dosome(self):pass

@@ -35,8 +35,6 @@ But I cannot live without pattern matching yet...
 So...
 
 .. code:: Python
-
-
   >>patMatch({1,2,3},{1,2,3},partial=False)
   >>True
   >>patMatch({1,2},{1,2,3})
@@ -74,6 +72,30 @@ So...
 
   instance=sampleClass(1,15,20)
   patMatch(sampleClass(1,Any(int),Any(int)),instance) # -> True
+
+.. code:: Python
+
+  from Stardust import *
+  matcher0=PM([1,"2",2])
+  print (matcher.match([1,Any(str),2])) ->True
+
+  matcher1=PM([1,2,3,4,""])
+  print (matcher2.match([1,Seq(int),""])) -> True
+
+  class sample:
+    def __init__(self,a,b,c):
+      self.a=a
+      self.b=b
+      self.c=c
+    def dosome(self):pass
+
+  matcher2=PM([[sample(1,2,3),dict(a=2,c=5,d=7)],[],[]])
+  matcher2.match([[sample(Any(),*[Any(int)]*2,dict(a=2)],Seq(list)],partial=True) ->True
+
+
+
+
+
 
 
 this library is not complete at this time, but I'll finish it soon.

@@ -22,6 +22,11 @@ class myobj:
 x=PM(myobj(1,[23,""],2))
 print(x.match( myobj(1,Any(list),2)))
 
+#debug for str:
+
+x=PM([1,2,"123,","456"])
+print(x.match([Seq(int),Any(str),"456"]))
+
 
 
 
