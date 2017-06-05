@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
 from collections import Iterable,defaultdict
 import re
-def tail_call(RetDeal=None):
-    """
-    tail-call optimization
-    """
-    def wrapper1(func):
-        def wrapper2(*args,**kwargs):
-            tail=func(*args,**kwargs)
-            while True:
-                try:
-                    tail=next(tail)
-                except:
-                    return tail if not RetDeal else RetDeal(tail)
-        return wrapper2
-    return wrapper1
-
+PMRegex=re.compile('__.*__')
+def DefaultReturn(RetDeal=None):
+    def outw(func):
+        def wrapper(*args,**kwargs):
+            try:
+                tail=func(*args,**kwargs)
+            except:
+                return RetDeal
+            return tail
+        return wrapper
+    return outw
 class Any(object):
     def __init__(self,family=object):
         self.family=family
@@ -34,15 +30,15 @@ def AlgebraDiv(iterator,func):
     for item in iterator:
         subStructures[func(item)].add(item)
     return subStructures
-
-@tail_call(RetDeal=lambda var:var==True)
+   
+@DefaultReturn(RetDeal=False)
 def checkSeq(val,var):
     """
     check the sequential data-type like tuple and list and the subclasses inherit them.
     it supports the nd-array in NumPy.
     """
     if len(val)==0 :
-        yield len(val)==0 and len(var)==0
+        return len(val)==0 and len(var)==0
     elif isinstance(val[0],Seq):
         catchNum = 0
         for var_i in var:
@@ -50,24 +46,29 @@ def checkSeq(val,var):
                 catchNum += 1
             else:break
         if catchNum>=val[0].least:
-            yield checkSeq(val[1:],var[catchNum:])
+            return checkSeq(val[1:],var[catchNum:])
         else:
-            yield False
+            return False
     elif isinstance(val[0],Iterable) and not issubclass(val[0].__class__,str):
-        yield checkSeq(val[0],var[0]) and checkSeq(val[1:],var[1:])
+        return checkSeq(val[0],var[0]) and checkSeq(val[1:],var[1:])
     else:
-        yield False if val[0]!=var[0] else checkSeq(val[1:],var[1:])
+        return False if val[0]!=var[0] else checkSeq(val[1:],var[1:])
 
 
-def patMatch(val,var,partial=True,expected=False):
+def patMatch(val,var,partial):
     if isinstance(val,Iterable):
         try:
             if issubclass(val.__class__,set):
+                
                 subStructures=AlgebraDiv(val,
                     lambda item: isinstance(item,Any))
+                
                 NormalDefined,GeneralDefined =subStructures[False],subStructures[True]
+                
                 judge_one= len(NormalDefined&var)== len(NormalDefined)
+                
                 if not judge_one:return False
+                
                 for idx,item in enumerate(var):
                     if item in val:
                         val.remove(item)
@@ -98,26 +99,24 @@ def patMatch(val,var,partial=True,expected=False):
             else:
                 return checkSeq(val,var)
         except:
-                if expected:return ValueError
                 return False
     else:
-        attrs=dir(val)
+        attrs=filter(lambda x:not PMRegex.findall(x) ,dir(val))
+        if not partial:
+            attrsVar=list(filter(lambda x:not PMRegex.findall(x) ,dir(var)))
+            if set(attrs)&set(attrsVar)!= len(attrs):
+                return False
         for attr in attrs:
-            if not re.findall('__.*__',attr).index(attr):continue
-            if  not (hasattr(var,attr) and getattr(var,attr)==getattr(val,attr)):
+            
+            if  not (hasattr(var,attr) and (getattr(var,attr)==getattr(val,attr) or
+                                     getattr(var,attr).__class__==getattr(val,attr).__class__) ):
                 return False
         return True
 
 
-def f(value):
-    pm=PM(value)
-    if pm.match([1,2,Any(int)]):
-        ...
-        return ...
-    if pm.match([Seq(str),[Seq(int)]]):
-        ...
-        return ...
-    if pm.match(dict(a=Any(),b='match')):
-        ...
-        return ...
-    ...
+class PatternMatching:
+    def __init__(self,matchvalue):
+        self.matchvalue=matchvalue
+    def match(self,value,partial=True):
+        return patMatch(value,self.matchvalue,partial)
+        
