@@ -22,6 +22,7 @@ For sure it seems most likely that the answer is Haskell.
     | (x%10==0) = "tens"
     | otherwise = "tens and digit"
 
+
 But in some degree it's not practicable for me to use Haskell as my main weapon,
 the reasons for which are lying in the aspects about the available and comprehensive libraries in Python and
 the traditions in Scientific Researching.

@@ -53,8 +53,8 @@ def checkSeq(val,var):
             yield checkSeq(val[1:],var[catchNum:])
         else:
             yield False
-    elif isinstance(val[0],Iterable):
-        yield checkSeq(val[0],var[0])  and isinstance(val[0],Iterable)and checkSeq(val[1:],var[1:])
+    elif isinstance(val[0],Iterable) and not issubclass(val[0].__class__,str):
+        yield checkSeq(val[0],var[0]) and checkSeq(val[1:],var[1:])
     else:
         yield False if val[0]!=var[0] else checkSeq(val[1:],var[1:])
 
@@ -107,3 +107,17 @@ def patMatch(val,var,partial=True,expected=False):
             if  not (hasattr(var,attr) and getattr(var,attr)==getattr(val,attr)):
                 return False
         return True
+
+
+def f(value):
+    pm=PM(value)
+    if pm.match([1,2,Any(int)]):
+        ...
+        return ...
+    if pm.match([Seq(str),[Seq(int)]]):
+        ...
+        return ...
+    if pm.match(dict(a=Any(),b='match')):
+        ...
+        return ...
+    ...
