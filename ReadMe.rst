@@ -11,12 +11,14 @@ LaTexDSL
 ---------------
 
 - Requirements:
+
   - MiKTeX 2.9.6300
   - PyInstaller for cpy3
   - python
 
 just see  how the source codes transformed to the target...
 
+test.tex
 .. code:: LaTex
 
   \documentclass[UTF8]{ctexart}
@@ -41,6 +43,7 @@ just see  how the source codes transformed to the target...
   $$y \in func f <<div X A>> $$
   []
 
+target.tex
 .. code:: LaTex
 
   \documentclass[UTF8]{ctexart}
