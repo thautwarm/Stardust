@@ -71,8 +71,9 @@ target.tex
 
 
 
-  Uh... I think it help a lot with my homework...
-  just pack the file startex.py to .exe in Windows, and then
+Uh... I think it help a lot with my homework...
+just pack the file startex.py to .exe in Windows, and then
+
 .. code:: shell
   startex <tagfile> <outputfile>
 
