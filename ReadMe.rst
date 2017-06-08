@@ -16,7 +16,9 @@ LaTexDSL
   - python
 
 just see  how the source codes transformed to the target...
+
 .. code:: LaTex
+
   \documentclass[UTF8]{ctexart}
   \usepackage{amsmath,amssymb,latexsym}
   \begin{document}
@@ -40,6 +42,7 @@ just see  how the source codes transformed to the target...
   []
 
 .. code:: LaTex
+
   \documentclass[UTF8]{ctexart}
   \usepackage{amsmath,amssymb,latexsym}
   \begin{document}
