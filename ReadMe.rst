@@ -19,6 +19,7 @@ LaTexDSL
 just see  how the source codes transformed to the target...
 
 test.tex
+
 .. code:: LaTex
 
   \documentclass[UTF8]{ctexart}
@@ -43,7 +44,9 @@ test.tex
   $$y \in func f <<div X A>> $$
   []
 
+
 target.tex
+
 .. code:: LaTex
 
   \documentclass[UTF8]{ctexart}
