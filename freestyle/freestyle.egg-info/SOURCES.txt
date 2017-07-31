@@ -1,0 +1,6 @@
+README.rst
+setup.py
+freestyle.egg-info/PKG-INFO
+freestyle.egg-info/SOURCES.txt
+freestyle.egg-info/dependency_links.txt
+freestyle.egg-info/top_level.txt
