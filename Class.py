@@ -9,6 +9,7 @@ Created on Thu Aug 24 21:35:20 2017
 def _gettype(self, *protos):
     def _type(x):return x._class_
     _type.mro = [self]+list(protos)
+    _type.mro.reverse()
     return _type
 
 def funcwrapper(self, obj):
@@ -47,4 +48,3 @@ def _class(*protos, **_ignored):
 
 def _isinstance(x, A):
         return A in x._class_._class_.mro
-    
