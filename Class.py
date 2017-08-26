@@ -8,8 +8,16 @@ Created on Thu Aug 24 21:35:20 2017
 
 def _gettype(self, *protos):
     def _type(x):return x._class_
-    _type.mro = [self]+list(protos)
-    _type.mro.reverse()
+    _type.mro = []
+    def get_proto_stream():
+        yield self
+        for proto in protos:
+            yield from proto._class_.mro
+    for proto in get_proto_stream():
+        if proto in _type.mro:
+            pass
+        else:
+            _type.mro.append(proto)
     return _type
 
 def funcwrapper(self, obj):
@@ -30,7 +38,7 @@ def _class(*protos, **_ignored):
             inst_closure._init_(*args, **kwargs)
             inst_closure._class_ = class_closure
             return inst_closure
-
+        
         class_closure.__name__= cls.__name__
         class_closure._class_ = _gettype(class_closure, *protos)
         for proto in protos:
@@ -48,3 +56,19 @@ def _class(*protos, **_ignored):
 
 def _isinstance(x, A):
         return A in x._class_._class_.mro
+    
+@_class()
+def cls1():
+    def _init_(self, v):
+        self.v = v
+    def method(self, v):
+        return self.v+v
+    return locals()
+
+@_class(cls1)
+def cls2():
+    def _init_(self, v):
+        self.v = v
+    def method(self, v):
+        return self.v*v
+    return locals()

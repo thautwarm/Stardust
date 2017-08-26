@@ -8,7 +8,7 @@ Created on Thu Aug 24 17:29:00 2017
 
 class strict:
 	@staticmethod
-	def args(*typeargs : dict, **typekwargs:dict): 
+	def args(*typeargs : (*(),), **typekwargs:dict): 
 	        def _1(func):
 	            def _2(*args, **kwargs):
 	                for arg_idx, (arg,typearg) in enumerate(zip(args, typeargs)):
