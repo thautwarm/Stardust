@@ -215,3 +215,32 @@ And there're many nice properties to use the `strict` you can find it for yourse
 The source codes is tiny, you can see it [here](https://github.com/thautwarm/Stardust/blob/master/typepy.py)  
 Making some extensions based on it might be something very very interesting!
 
+## TCO in CPython
+------------------
+See [tco.ipynb](./tco.ipynb).  
+```python
+import functools
+from collections import namedtuple
+param_struct = namedtuple('param_struct', ['args', 'kwargs'])
+def tco(func):
+    def call(*args, **kwargs):
+        try:
+            old = func.__globals__[func.__name__] 
+            func.__globals__[func.__name__] = lambda *args, **kwargs : param_struct(args, kwargs)
+            res = param_struct(args, kwargs)
+            while True:
+                res = func(*res.args, **res.kwargs)
+                if isinstance(res, param_struct):
+                    continue
+                break
+            func.__globals__[func.__name__] = old
+            return res
+        except Exception as e:
+            func.__globals__[func.__name__] = old
+            raise e
+    return call
+```
+I'm so glad to see that `tail call optimization` could be put into actual use in Python.
+
+
+
